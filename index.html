@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript"   src="public/js/underscore.string/dist/underscore.string.js" ></script>
+<script type="text/javascript"   src="public/js/underscore-master/underscore.js" ></script>
+<script type="text/javascript"  src="public/js/angular.min.js"></script>
+<script type="text/javascript"  src="public/js/moment.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="public/css/style.css" type="text/css">
+	<title></title>
+</head>
+<body ng-app="myApp" ng-controller="myCtrl">
+
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Persona<span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Registro Personas</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div class="col-md-6">
+	<div class="panel panel-default">
+		<div class="panel-heading">ejercicio 1</div>
+		<div class="panel-body">
+			<ul class="nav nav-tabs">
+			  <li class="active"><a data-toggle="tab" href="#home">Agregar Persona</a></li>
+			  <li><a data-toggle="tab" href="#menu1">Lista Personas</a></li>
+			  <li><a data-toggle="tab" href="#menu2">Lista Personas (carros)</a></li>
+			</ul>
+
+			<div class="tab-content">
+
+				<div id="home" class="tab-pane fade in active">
+					<form ng-submit="guardar()">
+						<div class="form-group">
+    						<label for="nombre">Nombre:</label>
+    						<input type="text" class="form-control" ng-model="add.nombre" required>
+  						</div>
+  						<div class="form-group">
+    						<label for="ApellidoP">Apellido paterno:</label>
+    						<input type="text" class="form-control" ng-model="add.apellido_p" required>
+  						</div>
+  						<div class="form-group">
+    						<label for="ApellidoM">Apellido materno:</label>
+    						<input type="text" class="form-control" ng-model="add.apellido_m" required>
+  						</div>
+  						<div class="form-group">
+    						<label for="FechaN">Fecha de nacimiento:</label>
+    						<input type="date" class="form-control" ng-model="add.fecha_nacimiento" required>
+  						</div>
+
+						<button type="submit" class="btn btn-success pull-right">Guardar</button>
+					</form>
+			  	</div>
+			  	
+				<div id="menu1" class="tab-pane fade">
+				<div class="col-md-12 button-group" ng-if="personSelected != null && personCar ===null && personEdit ===null">
+						<button type="button" class="btn btn-success btn-sm" ng-click="addCar(personSelected)">Agregar Auto</button>
+						<button type="button" class="btn btn-warning btn-sm" ng-click="editPersona(personSelected)">Editar</button>
+				</div>
+						  	<table class="table table-hover" ng-if="personCar ===null && personEdit ===null">
+								  <thead>
+								    <tr>
+								      <th>Nombres</th>
+								      <th>Apellido paterno</th>
+								      <th>Apellido materno</th>
+								      <th>Fecha de nacimiento</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr  ng-repeat="person in persons track by $index"  ng-click="setSelected($index)" ng-class="{selected : $index === personSelected}">
+								      <td>{{person.nombre}}</td>
+								      <td>{{person.apellido_p}}</td>
+								      <td>{{person.apellido_m}}</td>
+								      <td>{{person.fecha_nacimiento}}</td>
+								    </tr>
+								  </tbody>
+							</table>
+
+							<div class="col-md-12" ng-if="personEdit !=null">
+									<h4 class="text-center">Editar persona</h4>
+							</div>
+
+							<form ng-submit="editarPersona(personEdit)" ng-if="personEdit !=null">
+								<div class="form-group">
+		    						<label for="nombre">Nombre:</label>
+		    						<input type="text" class="form-control" ng-model="detailPerson.nombre" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="ApellidoP">Apellido paterno:</label>
+		    						<input type="text" class="form-control" ng-model="detailPerson.apellido_p" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="ApellidoM">Apellido materno:</label>
+		    						<input type="text" class="form-control" ng-model="detailPerson.apellido_m" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="FechaN">Fecha de nacimiento:</label>
+		    						<input type="date" class="form-control" ng-model="detailPerson.fecha_nacimiento" required>
+		  						</div>
+
+								<button type="submit" class="btn btn-success pull-right">Guardar</button>
+							</form>
+
+							<div class="col-md-12" ng-if="personCar !=null">
+									<div class="col-md-12">
+									<h5 class="text-center">Persona: {{detailPerson.nombre}} {{detailPerson.apellido_p}} {{detailPerson.apellido_m}}</h5>
+									<h4 class="text-center">Registro de auto</h4>
+									</div>
+							</div>
+
+							<form ng-submit="guardarAuto(personCar)" ng-if="personCar !=null">
+								<div class="form-group">
+		    						<label for="marca">Marca:</label>
+		    						<input type="text" class="form-control" ng-model="addCars.marca" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="modelo">Modelo:</label>
+		    						<input type="text" class="form-control" ng-model="addCars.modelo" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="anio">Año:</label>
+		    						<input type="number" class="form-control" ng-model="addCars.anio" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="color">Color:</label>
+		    						<input type="text" class="form-control" ng-model="addCars.color" required>
+		  						</div>
+
+								<button type="submit" class="btn btn-success pull-right">Guardar</button>
+							</form>
+				</div>
+
+				<div id="menu2" class="tab-pane fade">
+						  	<table class="table table-hover" ng-if="personSelectedDos === null">
+								  <thead>
+								    <tr>
+								      <th>Nombres</th>
+								      <th>Apellido paterno</th>
+								      <th>Apellido materno</th>
+								      <th>Fecha de nacimiento</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr  ng-repeat="persondos in persons track by $index"  ng-click="showCars($index)" ng-class="{selected : $index === personSelectedDos}">
+								      <td>{{persondos.nombre}}</td>
+								      <td>{{persondos.apellido_p}}</td>
+								      <td>{{persondos.apellido_m}}</td>
+								      <td>{{persondos.fecha_nacimiento}}</td>
+								    </tr>
+								  </tbody>
+							</table>
+
+							<div class="col-md-12" ng-if="personSelectedDos != null && carEdit === null">
+									<div class="col-md-8">
+									<h4>Persona: {{detailPersonDos.nombre}} {{detailPersonDos.apellido_p}} {{detailPersonDos.apellido_m}}</h4>
+									</div>
+									<div class="col-md-4 button-group" ng-if="carSelected != null">
+										<button type="button" class="btn btn-success btn-sm" ng-click="editCar(personSelectedDos, carSelected)">Editar Auto</button>
+										<button type="button" class="btn btn-danger btn-sm" ng-click="deleteCar(personSelectedDos, carSelected)">Eliminar</button>
+									</div>
+							</div>
+
+							<table class="table table-hover" ng-if="personSelectedDos != null && carEdit === null">
+								  <thead>
+								    <tr>
+								      <th>Marca</th>
+								      <th>Modelo</th>
+								      <th>Año</th>
+								      <th>Color</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr  ng-repeat="car in personCars track by $index" ng-click="setSelectedCar($index)" ng-class="{selected : $index === carSelected}">
+								      <td>{{car.marca}}</td>
+								      <td>{{car.modelo}}</td>
+								      <td>{{car.anio}}</td>
+								      <td>{{car.color}}</td>
+								    </tr>
+
+
+								  </tbody>
+							</table>
+
+							<form ng-submit="editarCarro(personEdit, carEdit)" ng-if="carEdit !=null">
+								<div class="form-group">
+		    						<label for="marca">Marca:</label>
+		    						<input type="text" class="form-control" ng-model="detailCar.marca" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="modelo">Modelo:</label>
+		    						<input type="text" class="form-control" ng-model="detailCar.modelo" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="anio">Año:</label>
+		    						<input type="number" class="form-control" ng-model="detailCar.anio" required>
+		  						</div>
+		  						<div class="form-group">
+		    						<label for="color">Color:</label>
+		    						<input type="text" class="form-control" ng-model="detailCar.color" required>
+		  						</div>
+
+								<button type="submit" class="btn btn-success pull-right">Guardar</button>
+							</form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="col-md-6">
+	 <div class="well"><pre>{{persons | json}}</pre></div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="app.js"></script>
+</body>
+</html>
